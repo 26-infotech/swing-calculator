@@ -16,6 +16,7 @@ class Calculator extends JFrame implements ActionListener {
     private String operator = "";
     private boolean isNewInput = true;
     private double maxValue = 999999999;
+    private double minValue = -999999999;
     NumberFormat locale = NumberFormat.getInstance(Locale.KOREA);
 
     JLabel ResultLabel = new JLabel("0");
@@ -54,14 +55,9 @@ class Calculator extends JFrame implements ActionListener {
     }
 
     public void setResultLabel(double result) {
-    	result = result > maxValue ? maxValue : result;
+        if (result > maxValue) result = maxValue;
+        else if (result < minValue) result = minValue;
         ResultLabel.setText(formatResult(result));
-    }
-
-    public void setResultLabel(String result) {
-    	double resultDouble = Long.parseLong(result);
-    	resultDouble = resultDouble > maxValue ? maxValue : resultDouble;
-        ResultLabel.setText(locale.format(resultDouble));
     }
 
     public double getResultLabel() {
@@ -89,8 +85,10 @@ class Calculator extends JFrame implements ActionListener {
                 isNewInput = false;
             } else {
                 String current = ResultLabel.getText().replace(",", "");
-                String result = current.equals("0") ? cmd : current + cmd;
-                ResultLabel.setText(locale.format(Long.parseLong(result)));
+                String raw = current.equals("0") ? cmd : current + cmd;
+                long parsed = Long.parseLong(raw);
+                if (parsed > maxValue) parsed = (long) maxValue;
+                ResultLabel.setText(locale.format(parsed));
             }
 
         } else if (cmd.equals("=")) {
