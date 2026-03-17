@@ -85,10 +85,11 @@ class Calculator extends JFrame implements ActionListener {
                 isNewInput = false;
             } else {
                 String current = ResultLabel.getText().replace(",", "");
-                String raw = current.equals("0") ? cmd : current + cmd;
+                boolean isNegative = current.startsWith("-");
+                String abs = isNegative ? current.substring(1) : current;
+                String raw = abs.equals("0") ? cmd : abs + cmd;
                 long parsed = Long.parseLong(raw);
-                if (parsed > maxValue) parsed = (long) maxValue;
-                ResultLabel.setText(locale.format(parsed));
+                setResultLabel(isNegative ? -parsed : parsed);
             }
 
         } else if (cmd.equals("=")) {
@@ -101,6 +102,11 @@ class Calculator extends JFrame implements ActionListener {
             }
 
         } else {
+            if (cmd.equals("-") && isNewInput) {
+                ResultLabel.setText("-0");
+                isNewInput = false;
+                return;
+            }
             if (!operator.isEmpty() && !isNewInput) {
                 double secondNumber = getResultLabel();
                 firstNumber = calculate(firstNumber, secondNumber, operator);
